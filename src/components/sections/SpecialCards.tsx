@@ -177,6 +177,7 @@ const SpecialCard = ({ card, index, smoothRotation, angleStep }: any) => {
         filter,
         zIndex,
         rotateY: 0,
+        willChange: 'transform, opacity, filter',
       }}
     >
       {/* Background Technical Pattern (Sync with Gameplay) */}
@@ -193,7 +194,7 @@ const SpecialCard = ({ card, index, smoothRotation, angleStep }: any) => {
       
       {/* Floating Particles (Stardust) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(8)].map((_, i) => (
+        {[...Array(4)].map((_, i) => (
           <motion.div
             key={i}
             className="absolute rounded-full"

@@ -65,7 +65,14 @@ const Scene = () => {
 const FloatingCards = () => {
   return (
     <div className="absolute inset-0 z-0">
-      <Canvas>
+      <Canvas
+        dpr={[1, 2]} // Limit pixel ratio to 2 for performance
+        gl={{ 
+          antialias: true,
+          powerPreference: "high-performance",
+          alpha: true 
+        }}
+      >
         <PerspectiveCamera makeDefault position={[0, 0, 10]} fov={50} />
         <Scene />
       </Canvas>

@@ -183,6 +183,7 @@ const Card = ({ card, index, smoothRotation, angleStep }: any) => {
         filter,
         zIndex,
         rotateY: 0,
+        willChange: 'transform, opacity, filter',
       }}
     >
       {/* Background Dotted Pattern */}
@@ -199,7 +200,7 @@ const Card = ({ card, index, smoothRotation, angleStep }: any) => {
       
       {/* Dynamic Energy Particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(5)].map((_, i) => (
+        {[...Array(3)].map((_, i) => (
           <motion.div
             key={i}
             className="absolute rounded-full"
