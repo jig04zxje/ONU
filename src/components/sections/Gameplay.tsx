@@ -1,80 +1,262 @@
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useMotionValue, useSpring, useTransform, animate } from 'framer-motion';
+import { Flame, Shield, Wand2, Zap } from 'lucide-react';
 
 const cardTypes = [
-  { name: 'Red', subtitle: 'Passion', color: 'bg-[#4B0F1A]', gradient: 'from-[#6B1826]' },
-  { name: 'Blue', subtitle: 'Trust', color: 'bg-[#1A2E4B]', gradient: 'from-[#2A4B7A]' },
-  { name: 'Purple', subtitle: 'Fantasy', color: 'bg-[#2C0E3A]', gradient: 'from-[#4A186B]' },
-  { name: 'Black', subtitle: 'Chaos', color: 'bg-[#0B0B0F]', gradient: 'from-[#1A1A1A]' },
+  { 
+    name: 'Red', 
+    subtitle: 'Passion', 
+    color: 'bg-[#4B0F1A]', 
+    gradient: 'from-[#8B1A2E]', 
+    accent: '#FF4D4D',
+    icon: Flame,
+    shadow: 'shadow-red-900/40'
+  },
+  { 
+    name: 'Blue', 
+    subtitle: 'Trust', 
+    color: 'bg-[#1A2E4B]', 
+    gradient: 'from-[#2A4B7A]', 
+    accent: '#4D94FF',
+    icon: Shield,
+    shadow: 'shadow-blue-900/40'
+  },
+  { 
+    name: 'Purple', 
+    subtitle: 'Fantasy', 
+    color: 'bg-[#2C0E3A]', 
+    gradient: 'from-[#5A1D8B]', 
+    accent: '#B34DFF',
+    icon: Wand2,
+    shadow: 'shadow-purple-900/40'
+  },
+  { 
+    name: 'Black', 
+    subtitle: 'Chaos', 
+    color: 'bg-[#0B0B0F]', 
+    gradient: 'from-[#2A2A2A]', 
+    accent: '#999999',
+    icon: Zap,
+    shadow: 'shadow-black/60'
+  },
 ];
 
 const Gameplay = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Motion values for rotation
+  const rotation = useMotionValue(0);
+  const smoothRotation = useSpring(rotation, {
+    stiffness: 150,
+    damping: 30,
+    mass: 1
+  });
+
+  const cardCount = cardTypes.length;
+  const angleStep = 360 / cardCount;
+
+  // Handle Drag
+  const handleDrag = (_: any, info: any) => {
+    rotation.set(rotation.get() + info.delta.x * 0.5);
+  };
+
+  const handleDragEnd = (_: any, info: any) => {
+    const currentRotation = rotation.get();
+    const velocity = info.velocity.x;
+    
+    let targetRotation = Math.round(currentRotation / angleStep) * angleStep;
+    
+    if (Math.abs(velocity) > 500) {
+      targetRotation += Math.sign(velocity) * angleStep;
+    }
+
+    animate(rotation, targetRotation, {
+      type: "spring",
+      stiffness: 150,
+      damping: 30,
+    });
+  };
+
   return (
-    <section id="gameplay" className="py-24 md:py-40 bg-velvet-black/90 relative">
-      <div className="container mx-auto px-6 md:px-12 text-center mb-16">
+    <section id="gameplay" className="py-24 md:py-40 bg-velvet-black/90 relative overflow-hidden">
+      <div className="container mx-auto px-6 md:px-12 text-center mb-16 relative z-10">
         <h2 className="text-sm uppercase tracking-[0.4em] text-gold font-bold mb-6">The Mechanics</h2>
         <h3 className="text-4xl md:text-6xl font-black mb-8 uppercase tracking-widest text-glow">Core <span className="italic">Gameplay</span></h3>
-        <p className="text-white/60 max-w-2xl mx-auto text-lg">
+        <p className="text-white/60 max-w-2xl mx-auto text-lg text-balance">
           Match colors, play your numbers, and use chaos to stay ahead. 
           Simple to learn, dangerous to lose.
         </p>
       </div>
 
-      <div className="container mx-auto px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {cardTypes.map((card, idx) => (
-          <motion.div
-            key={idx}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: idx * 0.1 }}
-            viewport={{ once: true }}
-            whileHover={{ y: -10, rotateY: 10, transition: { duration: 0.3 } }}
-            className={`group relative aspect-[4/5.5] ${card.color} border border-white/10 p-6 flex flex-col justify-between overflow-hidden shadow-2xl preserve-3d`}
-          >
-            {/* Gloss shine */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            
-            <div className="flex justify-between items-start">
-              <span className="text-3xl font-heading font-black tracking-tighter text-white/90">9</span>
-              <div className="w-8 h-8 md:w-10 md:h-10 border border-gold/30 rounded-full flex items-center justify-center">
-                <span className="text-[10px] text-gold font-black uppercase">V</span>
-              </div>
-            </div>
-
-            <div className="text-center">
-              <h4 className="text-white text-2xl font-black uppercase tracking-widest mb-1">{card.name}</h4>
-              <p className="text-gold/60 text-xs uppercase tracking-[0.3em] font-bold">{card.subtitle}</p>
-            </div>
-
-            <div className="flex justify-between items-end rotate-180">
-              <span className="text-3xl font-heading font-black tracking-tighter text-white/90">9</span>
-              <div className="w-8 h-8 md:w-10 md:h-10 border border-gold/30 rounded-full flex items-center justify-center">
-                <span className="text-[10px] text-gold font-black uppercase">V</span>
-              </div>
-            </div>
-
-            {/* Inner frame */}
-            <div className="absolute inset-4 border border-gold/10 pointer-events-none group-hover:border-gold/30 transition-colors duration-500" />
-          </motion.div>
-        ))}
+      <div 
+        ref={containerRef}
+        className="relative h-[550px] w-full flex items-center justify-center perspective-[1200px] select-none"
+      >
+        <motion.div
+          drag="x"
+          onDrag={handleDrag}
+          onDragEnd={handleDragEnd}
+          style={{ width: '100%', height: '100%', position: 'absolute', zIndex: 2000 }}
+          className="cursor-grab active:cursor-grabbing"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.1}
+        />
+        
+        <div className="relative w-full max-w-[1200px] h-full flex items-center justify-center preserve-3d">
+          {cardTypes.map((card, idx) => (
+            <Card 
+              key={idx} 
+              card={card} 
+              index={idx} 
+              smoothRotation={smoothRotation} 
+              angleStep={angleStep}
+            />
+          ))}
+        </div>
       </div>
 
-      <div className="container mx-auto px-6 md:px-12 mt-20 text-center">
+      {/* Drag Hint Line */}
+      <div className="container mx-auto px-6 flex flex-col items-center mt-8 space-y-4">
+        <div className="w-64 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent relative">
+          <motion.div 
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-1 bg-gold rounded-full shadow-[0_0_10px_rgba(255,215,0,0.5)]"
+            style={{ 
+              x: useTransform(smoothRotation, (v: number) => {
+                return ((-v % 360) / 360) * 80; 
+              })
+            }}
+          />
+        </div>
+        <span className="text-gold/40 text-[10px] uppercase tracking-[0.4em] font-bold animate-pulse pointer-events-none select-none">Drag to Explore</span>
+      </div>
+
+      <div className="container mx-auto px-6 md:px-12 mt-20 text-center relative z-10">
         <div className="inline-grid grid-cols-1 md:grid-cols-3 gap-8 text-left max-w-4xl mx-auto">
-          <div className="p-6 bg-white/5 border border-white/10">
+          <div className="p-6 bg-white/5 border border-white/10 group hover:border-gold/30 transition-colors">
             <h5 className="text-gold font-bold mb-2 uppercase text-xs tracking-widest">53 Core Cards</h5>
             <p className="text-white/40 text-sm">4 Colors (Passion, Trust, Fantasy, Chaos). Numbers 1-9 & Wilds.</p>
           </div>
-          <div className="p-6 bg-white/5 border border-white/10">
+          <div className="p-6 bg-white/5 border border-white/10 group hover:border-gold/30 transition-colors">
             <h5 className="text-gold font-bold mb-2 uppercase text-xs tracking-widest">Match & Play</h5>
             <p className="text-white/40 text-sm">Just like classic UNO. Match by color or number to shed your hand.</p>
           </div>
-          <div className="p-6 bg-white/5 border border-white/10">
+          <div className="p-6 bg-white/5 border border-white/10 group hover:border-gold/30 transition-colors">
             <h5 className="text-gold font-bold mb-2 uppercase text-xs tracking-widest">The Risk Is Real</h5>
             <p className="text-white/40 text-sm">The last player standing with cards must draw from the Action Deck.</p>
           </div>
         </div>
       </div>
     </section>
+  );
+};
+
+const Card = ({ card, index, smoothRotation, angleStep }: any) => {
+  const radius = 420;
+  const CardIcon = card.icon;
+  
+  const rotateYValue = useTransform(smoothRotation, (v: number) => {
+    return (index * angleStep) + v;
+  });
+
+  const x = useTransform(rotateYValue, (angle: number) => {
+    return Math.sin((angle * Math.PI) / 180) * radius;
+  });
+
+  const z = useTransform(rotateYValue, (angle: number) => {
+    return Math.cos((angle * Math.PI) / 180) * radius;
+  });
+
+  const scale = useTransform(z, [-radius, radius], [0.85, 1]);
+  const opacity = useTransform(z, [-radius, radius], [0.5, 1]);
+  const blur = useTransform(z, [-radius, radius], [4, 0]);
+  const filter = useTransform(blur, (v: number) => `blur(${v}px)`);
+  const zIndex = useTransform(z, (v: number) => Math.round(v + radius));
+
+  return (
+    <motion.div
+      className={`absolute w-64 md:w-80 aspect-[4/6] ${card.color} border border-white/10 p-6 flex flex-col justify-between overflow-hidden shadow-2xl preserve-3d pointer-events-none select-none rounded-[2rem] ${card.shadow}`}
+      style={{
+        x,
+        z,
+        scale,
+        opacity,
+        filter,
+        zIndex,
+        rotateY: 0,
+      }}
+    >
+      {/* Background Dotted Pattern */}
+      <div 
+        className="absolute inset-0 opacity-[0.15]" 
+        style={{ 
+          backgroundImage: `radial-gradient(circle at 2px 2px, ${card.accent} 1px, transparent 0)`,
+          backgroundSize: '24px 24px'
+        }}
+      />
+
+      {/* Gloss shine */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 transition-opacity duration-500" />
+      
+      {/* Dynamic Energy Particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(5)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              width: Math.random() * 4 + 2,
+              height: Math.random() * 4 + 2,
+              backgroundColor: card.accent,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              opacity: 0.3,
+              filter: 'blur(2px)',
+            }}
+            animate={{
+              y: [0, -40, 0],
+              opacity: [0.2, 0.5, 0.2],
+              scale: [1, 1.5, 1],
+            }}
+            transition={{
+              duration: Math.random() * 3 + 2,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: Math.random() * 2,
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="flex justify-between items-start relative z-10">
+        <span className="text-4xl font-heading font-black tracking-tighter text-white/90 drop-shadow-lg">9</span>
+        <div className="w-10 h-10 border border-white/20 rounded-xl flex items-center justify-center bg-white/5 backdrop-blur-sm">
+          <CardIcon size={20} color={card.accent} strokeWidth={2.5} />
+        </div>
+      </div>
+
+      <div className="text-center relative z-10">
+        <div className="mb-4 inline-block p-4 rounded-full bg-white/5 backdrop-blur-md border border-white/10 shadow-inner">
+          <CardIcon size={48} color={card.accent} strokeWidth={1.5} className="drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]" />
+        </div>
+        <h4 className="text-white text-3xl font-black uppercase tracking-[0.2em] mb-1">{card.name}</h4>
+        <p className="text-gold/60 text-xs uppercase tracking-[0.4em] font-bold">{card.subtitle}</p>
+      </div>
+
+      <div className="flex justify-between items-end rotate-180 relative z-10">
+        <span className="text-4xl font-heading font-black tracking-tighter text-white/90 drop-shadow-lg">9</span>
+        <div className="w-10 h-10 border border-white/20 rounded-xl flex items-center justify-center bg-white/5 backdrop-blur-sm">
+          <CardIcon size={20} color={card.accent} strokeWidth={2.5} />
+        </div>
+      </div>
+
+      {/* Inner frame with glow */}
+      <div 
+        className="absolute inset-4 border border-white/5 rounded-[1.5rem] pointer-events-none" 
+        style={{ 
+          boxShadow: `inset 0 0 20px ${card.accent}15`
+        }} 
+      />
+    </motion.div>
   );
 };
 
