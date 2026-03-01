@@ -174,7 +174,7 @@ const Card = ({ card, index, smoothRotation, angleStep }: any) => {
 
   return (
     <motion.div
-      className={`absolute w-64 md:w-80 aspect-[4/6] ${card.color} border border-white/10 p-6 flex flex-col justify-between overflow-hidden shadow-2xl preserve-3d pointer-events-none select-none rounded-[2rem] ${card.shadow}`}
+      className={`absolute w-64 md:w-80 aspect-[4/6] ${card.color} border border-white/10 p-6 flex flex-col justify-between overflow-hidden shadow-2xl preserve-3d pointer-events-none select-none ${card.shadow}`}
       style={{
         x,
         z,
@@ -250,12 +250,15 @@ const Card = ({ card, index, smoothRotation, angleStep }: any) => {
         </div>
       </div>
 
-      {/* Inner frame with glow */}
+      {/* Inner frame with glow (Thick border like About section) */}
       <div 
-        className="absolute inset-4 border border-white/5 rounded-[1.5rem] pointer-events-none" 
+        className="absolute inset-0 border-[12px] border-white/5 pointer-events-none" 
         style={{ 
-          boxShadow: `inset 0 0 20px ${card.accent}15`
+          borderColor: `${card.accent}20` 
         }} 
+      />
+      <div 
+        className="absolute inset-0 border border-white/10 pointer-events-none" 
       />
     </motion.div>
   );

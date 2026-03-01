@@ -168,7 +168,7 @@ const SpecialCard = ({ card, index, smoothRotation, angleStep }: any) => {
 
   return (
     <motion.div
-      className={`absolute w-64 md:w-80 aspect-[4/6] bg-velvet-black border-[3px] border-gold/40 p-6 flex flex-col justify-between overflow-hidden shadow-2xl preserve-3d pointer-events-none select-none rounded-[2rem] ${card.shadow}`}
+      className={`absolute w-64 md:w-80 aspect-[4/6] bg-velvet-black border-[3px] border-gold/40 p-6 flex flex-col justify-between overflow-hidden shadow-2xl preserve-3d pointer-events-none select-none ${card.shadow}`}
       style={{
         x,
         z,
@@ -259,9 +259,9 @@ const SpecialCard = ({ card, index, smoothRotation, angleStep }: any) => {
         </div>
       </div>
 
-      {/* Premium Border Inner */}
-      <div className="absolute inset-2 border border-gold/10 rounded-[1.8rem] pointer-events-none" />
-      <div className="absolute inset-4 border border-gold/20 rounded-[1.5rem] pointer-events-none opacity-50" />
+      {/* Premium Border Inner (Thick gold border like About section) */}
+      <div className="absolute inset-0 border-[12px] border-gold/15 pointer-events-none" />
+      <div className="absolute inset-0 border border-gold/30 pointer-events-none" />
     </motion.div>
   );
 };
